@@ -23,6 +23,18 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
+# --- HELPER FUNCTIONS ---
+def format_short_currency(value):
+    """Formats large numbers into Millions, Billions, or Trillions."""
+    if value >= 1_000_000_000_000:
+        return f"₱ {value / 1_000_000_000_000:,.2f} T"
+    elif value >= 1_000_000_000:
+        return f"₱ {value / 1_000_000_000:,.2f} B"
+    elif value >= 1_000_000:
+        return f"₱ {value / 1_000_000:,.2f} M"
+    else:
+        return f"₱ {value:,.2f}"
+
 # --- DATA LOADING ---
 @st.cache_data(show_spinner="Loading dataset...")
 def load_data():
@@ -78,7 +90,6 @@ if "All" not in selected_budget and selected_budget:
     filtered_df = filtered_df[filtered_df["Type"].isin(selected_budget)]
 
 # --- OVERALL SUMMARY CONTAINER (Placeholder) ---
-# We create a container here so we can populate it AFTER reading the global search input from Tab 1
 kpi_container = st.container()
 
 st.markdown("---")
@@ -107,14 +118,12 @@ with tab1:
 # ==========================================
 # APPLY GLOBAL SEARCH & POPULATE KPIS
 # ==========================================
-# True Global Search (LIKE %VALUE%) across ALL columns
 if search_query.strip():
     search_mask = filtered_df.astype(str).apply(
         lambda col: col.str.contains(search_query, case=False, na=False)
     ).any(axis=1)
     filtered_df = filtered_df[search_mask]
 
-# Populate the KPI container created above with the fully filtered dataset
 with kpi_container:
     with st.spinner("Refreshing metrics..."):
         total_budget = filtered_df['TOTAL'].sum(skipna=True) if 'TOTAL' in filtered_df.columns else 0
@@ -123,15 +132,14 @@ with kpi_container:
 
         m1, m2, m3, m4 = st.columns(4)
         m1.metric("Matching Records", f"{len(filtered_df):,}")
-        m2.metric("Total Budget", f"₱ {total_budget:,.2f}")
-        m3.metric("Total Adaptation", f"₱ {total_adapt:,.2f}")
-        m4.metric("Total Mitigation", f"₱ {total_mitig:,.2f}")
+        m2.metric("Total Budget", format_short_currency(total_budget))
+        m3.metric("Total Adaptation", format_short_currency(total_adapt))
+        m4.metric("Total Mitigation", format_short_currency(total_mitig))
 
 
 # ==========================================
 # TAB 1: RENDER DATA TABLE
 # ==========================================
-# We append the actual table to tab 1 after the data is fully processed
 with tab1:
     with st.spinner("Refreshing data table..."):
         raw_display_df = filtered_df.copy()
@@ -203,7 +211,7 @@ with tab2:
                 with card_cols[i]:
                     st.metric(
                         label=f"Top {i+1}: {group_label[:30]}", 
-                        value=f"₱ {row['TOTAL']:,.2f}"
+                        value=format_short_currency(row['TOTAL'])
                     )
             
             st.dataframe(
