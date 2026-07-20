@@ -35,9 +35,6 @@ st.markdown("""
     [data-testid="stToolbar"] {
         visibility: hidden !important;
     }
-    header {
-        visibility: hidden !important;
-    }
     </style>
 """, unsafe_allow_html=True)
 
