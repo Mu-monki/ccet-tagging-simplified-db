@@ -20,6 +20,24 @@ st.markdown("""
     div[data-testid="stSpinner"] p {
         font-size: 1.1rem !important;
     }
+    /* Center the spinner and add top/bottom padding */
+    div[data-testid="stSpinner"] {
+        display: flex;
+        justify-content: center;
+        padding: 50px 0px !important;
+    }
+    /* Make the spinner text slightly larger */
+    div[data-testid="stSpinner"] p {
+        font-size: 1.1rem !important;
+    }
+    
+    /* HIDE THE TOP RIGHT MENU AND CLOUD TOOLBAR */
+    [data-testid="stToolbar"] {
+        visibility: hidden !important;
+    }
+    header {
+        visibility: hidden !important;
+    }
     </style>
 """, unsafe_allow_html=True)
 
