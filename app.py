@@ -31,10 +31,6 @@ st.markdown("""
         font-size: 1.1rem !important;
     }
     
-    /* HIDE THE TOP RIGHT MENU AND CLOUD TOOLBAR */
-    [data-testid="stToolbar"] {
-        visibility: hidden !important;
-    }
     </style>
 """, unsafe_allow_html=True)
 
